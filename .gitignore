@@ -9,4 +9,3 @@ __pycache__/
 
 # Ignore large datasets and models (GitHub blocks files over 100MB)
 *.csv
-*.pkl
