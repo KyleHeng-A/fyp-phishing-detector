@@ -1,0 +1,12 @@
+# Ignore virtual environments
+.venv/
+venv/
+env/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore large datasets and models (GitHub blocks files over 100MB)
+*.csv
+*.pkl
