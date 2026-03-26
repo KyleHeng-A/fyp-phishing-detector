@@ -52,5 +52,3 @@ if st.button("Run Security Scan"):
                         st.write(f"- ✅ {d.replace('_', ' ').title()}")
                 else:
                     st.write("No explicit rule-based red flags detected.")
-
-st.sidebar.info(f"System trained on 82,486 samples. \nTarget Accuracy: 99%")
