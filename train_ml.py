@@ -1,6 +1,7 @@
 # train_ml.py
 import joblib
 import os
+import random
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
@@ -12,10 +13,15 @@ def train_models():
     print("Loading dataset...")
     data = load_phishing_email_dataset("phishing_email.csv")
 
+    print(f"Original dataset size: {len(data)}")
+    print("Downsampling to 10,000 samples to prevent massive file sizes...")
+    random.seed(42)  # Ensures you get the exact same random 10k every time
+    data = random.sample(data, 10000)
+    # -------------------------------------------
+
     texts = [item["text"] for item in data]
     y = [1 if item["label"] == "phishing" else 0 for item in data]
 
-    # --- THE CRITICAL FYP STEP: Train/Test Split ---
     print("Splitting dataset into 80% Training and 20% Testing...")
     X_train, X_test, y_train, y_test = train_test_split(texts, y, test_size=0.2, random_state=42)
 
@@ -24,8 +30,6 @@ def train_models():
     joblib.dump((X_test, y_test), "detector/test_data_vault.pkl")
     print(f"Saved {len(X_test)} unseen emails to the test vault.")
 
-    # --- DATA LEAKAGE PREVENTION ---
-    # We strictly FIT the vectorizer ONLY on the training data.
     print("Vectorizing training text (TF-IDF)...")
     vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
     X_train_vec = vectorizer.fit_transform(X_train)
@@ -37,7 +41,7 @@ def train_models():
 
     # 2. Train Random Forest
     print("Training Random Forest...")
-    rf_model = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)  # n_jobs=-1 uses all CPU cores!
+    rf_model = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
     rf_model.fit(X_train_vec, y_train)
 
     print("Saving models...")
